@@ -939,7 +939,9 @@ export default {
         plist.push(tempParam)
       })
       this.step['stepParam'] = plist
-      this.firstParam = plist[0]['title']
+      if(plist.length > 0){
+        this.firstParam = plist[0]['title']
+      } 
       setTimeout(() => {
         this.addStepFormVisible = true
       }, 300)
@@ -984,7 +986,9 @@ export default {
           plist.push(tempParam)
         })
         this.step.stepParam = plist
-        this.firstParam = plist[0]['title']
+        if(plist.length > 0){
+          this.firstParam = plist[0]['title']
+        }  
         this.addStepKwVisible = false
       }
     },
@@ -1151,6 +1155,7 @@ export default {
           return false
         }
         data = {
+          projectID: sessionStorage.getItem('userProjectID'),
           name: '【DEBUG】' + this.getNowString(),
           runType: 'sigleCase',
           runEnv: this.runConf.env,

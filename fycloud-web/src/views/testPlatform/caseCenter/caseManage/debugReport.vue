@@ -77,14 +77,18 @@
                 </template>
               </el-table-column>
               <el-table-column
-                prop="shotImg"
+                prop="screen_shot"
                 label="截图"
                 width="100"
                 align="center">
                 <template slot-scope="scope">
                   <el-image
-                    v-if="scope.row.shotImg !==null && scope.row.shotImg !=='' && scope.row.shotImg !==undefined"
-                    :src="scope.row.img" />
+                    v-if="scope.row.screen_shot"
+                    style="width: 60px; height: 25px"
+                    fit="fill"
+                    :src="baseApi + '/testImages' + scope.row.screen_shot"
+                    :preview-src-list="[baseApi + '/testImages' + scope.row.screen_shot]">
+                  </el-image>
                 </template>
               </el-table-column>
             </el-table>
@@ -172,7 +176,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'testReport'
+      'baseApi'
     ])
   },
   // beforeRouteUpdate(to, from, next) {
