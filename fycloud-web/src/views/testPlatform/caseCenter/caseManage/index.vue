@@ -1135,12 +1135,19 @@ export default {
           return false
         }
         let caseIds = ''
+        let reportName = ''
         for (let i = 0; i < selected.length; i++) {
           caseIds = caseIds + selected[i].id.toString() + ','
+          reportName = reportName + selected[i].caseTitle + '、'
         }
         caseIds = caseIds.slice(0, -1)
+        if(reportName.length > 64){
+          reportName = reportName.substring(0, 64) + '...'
+        }else{
+          reportName = reportName + '...'
+        }
         data = {
-          name: '【BATCH DEBUG】' + this.getNowString(),
+          name: '【用例】' + reportName,
           runType: 'batchCase',
           runEnv: this.runConf.env,
           runMachine: this.runConf.machine,
@@ -1156,7 +1163,7 @@ export default {
         }
         data = {
           projectID: sessionStorage.getItem('userProjectID'),
-          name: '【DEBUG】' + this.getNowString(),
+          name: '【用例】' + this.form.caseTitle,
           runType: 'sigleCase',
           runEnv: this.runConf.env,
           runMachine: this.runConf.machine,

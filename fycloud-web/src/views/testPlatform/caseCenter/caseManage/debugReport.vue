@@ -1,20 +1,15 @@
 <template>
   <div class="app-container" v-loading="loading">
-    <h1 style=" text-align: center;margin-top: 5px;">{{ report.taskName }}</h1>
     <el-row :gutter="20">
-      <el-col :span="10">
-        <el-descriptions title="执行信息" direction="vertical" :column="5" border>
-          <el-descriptions-item label="开始时间">{{ report.startTime }}</el-descriptions-item>
-          <el-descriptions-item label="结束时间">{{ report.endTime }}</el-descriptions-item>
-          <el-descriptions-item label="测试耗时">{{ report.costTime }}</el-descriptions-item>
-        </el-descriptions>
+      <el-col :span="17">
+        <h3 style=" text-align: center;margin-top: 5px;">{{ report.taskName }}</h3>
       </el-col>
-      <el-col :span="10">
+      <el-col :span="3">
         <el-button
           type="primary"
           size="small"
           icon="el-icon-refresh"
-          style="height: 30px; margin-top: 20px;margin-left: 450px;"
+          style="height: 30px; margin-top: 20px;margin-left: 20px;"
           @click="freshData">刷新
       </el-button>
       </el-col>
@@ -179,29 +174,23 @@ export default {
       'baseApi'
     ])
   },
-  // beforeRouteUpdate(to, from, next) {
-  //   // 执行逻辑
-  //   window.location.reload();
-  //   this.openLoading()
-  //   this.getReportDetail()
-  //   next()
-  // },
   mounted() {
     const that = this
     window.onresize = function temp() {
       that.height = document.documentElement.clientHeight - 180 + 'px;'
     }
-    this.openLoading()
     this.getReportDetail()
   },
   methods: {
     // 获取报告详情
     getReportDetail() {
-      setTimeout(() => {
-        getReportDetail(this.reportid).then((res) => {
+      this.loading = true
+      setTimeout(async () => {
+        await getReportDetail(this.reportid).then((res) => {
           this.report = res
           this.reportLogs = res.testReportLogList
         })
+        this.loading = false
       }, 15000)
     },
     viewLogDetail(scope) {
@@ -209,17 +198,7 @@ export default {
       this.logDetailVisible = true
     },
     freshData() {
-      this.loading = true
-      setTimeout(() => {
-        this.loading = false
-      }, 2000)
-      this.getReportDetailQuick()
-    },
-    openLoading() {
-      this.loading = true
-      setTimeout(() => {
-        this.loading = false
-      }, 15000)
+      this.getReportDetail()
     }
   }
 }

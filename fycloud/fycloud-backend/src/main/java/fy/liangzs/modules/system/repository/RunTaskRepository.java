@@ -35,9 +35,9 @@ public interface RunTaskRepository extends JpaRepository<RunTask, Long>, JpaSpec
     @Query(value = "select * from `run_task` where `run_machine` =?1 and status='pending' ", nativeQuery = true)
     List<RunTask> findByMachineId(Long macId);
 
-    @Query(value = "select * from `run_task` where `run_type` !='task' and status in ('complete', 'stopped') ", nativeQuery = true)
+    @Query(value = "select * from `run_task` where `run_type` !='task' and status not in ('pending', 'running') ", nativeQuery = true)
     List<RunTask> findDebugTasks();
 
-    @Query(value = "select * from `run_task` where  status = 'running' ", nativeQuery = true)
+    @Query(value = "select * from `run_task` where  status = 'running' and `run_type` ='task'", nativeQuery = true)
     List<RunTask> findRunningTasks();
 }

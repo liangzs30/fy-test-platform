@@ -1,19 +1,14 @@
 package fy.liangzs.modules.system.scheduledtask;
 
-import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import fy.liangzs.annotation.Log;
 import fy.liangzs.modules.system.domain.ExecuteMachine;
 import fy.liangzs.modules.system.domain.RunTask;
 import fy.liangzs.modules.system.repository.RunTaskRepository;
 import fy.liangzs.modules.system.repository.TaskCaseRepository;
 import fy.liangzs.modules.system.repository.TestReportLogRepository;
 import fy.liangzs.modules.system.service.ExecuteMachineService;
-import fy.liangzs.modules.system.service.dto.ExecuteMachineDto;
-import fy.liangzs.modules.system.service.dto.ExecuteMachineQueryCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
