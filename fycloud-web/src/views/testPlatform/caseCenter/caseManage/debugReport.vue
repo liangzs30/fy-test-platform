@@ -179,11 +179,11 @@ export default {
     window.onresize = function temp() {
       that.height = document.documentElement.clientHeight - 180 + 'px;'
     }
-    this.getReportDetail()
+    this.getReportDetail(15000)
   },
   methods: {
     // 获取报告详情
-    getReportDetail() {
+    getReportDetail(timeout) {
       this.loading = true
       setTimeout(async () => {
         await getReportDetail(this.reportid).then((res) => {
@@ -191,14 +191,14 @@ export default {
           this.reportLogs = res.testReportLogList
         })
         this.loading = false
-      }, 15000)
+      }, timeout)
     },
     viewLogDetail(scope) {
       this.logDetail = scope
       this.logDetailVisible = true
     },
     freshData() {
-      this.getReportDetail()
+      this.getReportDetail(5000)
     }
   }
 }

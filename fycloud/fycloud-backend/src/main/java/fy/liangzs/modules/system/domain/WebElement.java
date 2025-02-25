@@ -54,6 +54,11 @@ public class WebElement extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "元素名称")
     private String name;
 
+    @Column(name = "`type`",nullable = false)
+    @NotBlank
+    @ApiModelProperty(value = "元素类型，selenium、playwright、android、ios")
+    private String type;
+
     @Column(name = "`find_type`")
     @ApiModelProperty(value = "查找类型")
     private String findType;

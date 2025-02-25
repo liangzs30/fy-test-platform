@@ -368,6 +368,7 @@
           </div>
         </el-dialog>
         <el-dialog
+          v-if="addStepKwVisible"
           title="选择关键字"
           :visible.sync="addStepKwVisible"
           width="60%"
@@ -376,12 +377,13 @@
           <kwTableComponent @handleSelectKw="selectKw" />
         </el-dialog>
         <el-dialog
-          title="选择web元素"
+          v-if="addWebElementVisible"
+          title="选择元素"
           :visible.sync="addWebElementVisible"
           width="60%"
           height="500px"
           :modal="false">
-          <WebElementComponent @handleSelectWebelement="selWebElement" />
+          <WebElementComponent @handleSelectWebelement="selWebElement" :elementType="elementType" />
         </el-dialog>
         <!--表格渲染-->
         <el-table
@@ -623,6 +625,7 @@ export default {
       submitLoading: false,
       currentReportID: null,
       reportDetailVisible: false,
+      elementType: 'Selenium',
       findRespType: [{label: 'jsonpath', value: 'jsonpath', label: '正则', value: 'regex'}],
       step: {
         kw: { name: '' },
@@ -642,6 +645,7 @@ export default {
       stepElement: {},
       firstParam: '',
       defaultProps: { children: 'children', label: 'name', isLeaf: 'leaf' },
+      is_child_category: false,
       permission: {
         add: ['admin', 'testCase:add'],
         edit: ['admin', 'testCase:edit'],
@@ -717,6 +721,13 @@ export default {
       })
     },
     // 新增前做的操作
+    [CRUD.HOOK.afterToAdd](crud, form) {
+      this.form.category.id = this.query.categoryId
+      if(this.is_child_category){
+        this.getSupCategorys(form.category.id)
+      }
+    },
+    // 新增前做的操作
     [CRUD.HOOK.beforeToAdd](crud, form) {
       this.form.projectID = sessionStorage.getItem('userProjectID')
       form.testSteps = []
@@ -729,6 +740,7 @@ export default {
     },
     // 编辑前做的操作
     [CRUD.HOOK.beforeToEdit](crud, form) {
+      console.log('this.query.categoryId:', this.query.categoryId)
       this.form.projectID = sessionStorage.getItem('userProjectID')
       this.caseNoDisable = true
       if (form.id == null) {
@@ -865,8 +877,10 @@ export default {
     handleNodeClick(data) {
       if (data.pid === 0) {
         this.query.categoryId = null
+        this.is_child_category = false
       } else {
         this.query.categoryId = data.id
+        this.is_child_category = true
       }
       this.crud.toQuery()
     },
@@ -1193,6 +1207,15 @@ export default {
       }, 200)
     },
     openWebElementDialog(title, index){
+      if(this.step.kw.className === 'Browser'){
+        this.elementType = 'Selenium'
+      }else if(this.step.kw.className === 'Playwright'){
+        this.elementType = 'Playwright'
+      }else if(this.step.kw.className === 'AndroidApp'){
+        this.elementType = 'Android'
+      }else if(this.step.kw.className === 'IOS'){
+        this.elementType = 'ios'
+      }
       this.step_param_title = title
       this.step_param_index = index
       this.addWebElementVisible = true

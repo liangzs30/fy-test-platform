@@ -38,6 +38,8 @@ public class WebElementDto extends BaseDTO implements Serializable {
 
     private Long categoryId;
 
+    private String type;
+
     /** 名称 */
     private String name;
 

@@ -95,7 +95,7 @@ export default {
   name: 'KwCategory',
   components: { Treeselect, crudOperation, rrOperation, udOperation, DateRangePicker },
   cruds() {
-    return CRUD({ title: 'WEB元素模块', url: '/api/elementCategory', crudMethod: { ...crudElCategory }})
+    return CRUD({ title: '模块', url: '/api/elementCategory', crudMethod: { ...crudElCategory }})
   },
   mixins: [presenter(), header(), form(defaultForm), crud()],
   // 设置数据字典

@@ -171,6 +171,7 @@ export default {
       categoryName: '', Categorys: [], categoryDatas: [],
       defaultProps: { children: 'children', label: 'name', isLeaf: 'leaf' },
       formDisable: false,
+      is_child_category: false,
       permission: {
         add: ['admin', 'kw:add'],
         edit: ['admin', 'kw:edit'],
@@ -216,6 +217,13 @@ export default {
     keydown(e) {
       if (e.keyCode === 32) {
         e.returnValue = false
+      }
+    },
+    // 新增前做的操作
+    [CRUD.HOOK.afterToAdd](crud, form) {
+      this.form.category.id = this.query.categoryId
+      if(this.is_child_category){
+        this.getSupCategorys(form.category.id)
       }
     },
     // 新增与编辑前做的操作
@@ -335,8 +343,10 @@ export default {
     handleNodeClick(data) {
       if (data.pid === 0) {
         this.query.categoryId = null
+        this.is_child_category = false
       } else {
         this.query.categoryId = data.id
+        this.is_child_category = true
       }
       this.crud.toQuery()
     },

@@ -43,6 +43,9 @@ public class WebElementQueryCriteria {
     @Query(type = Query.Type.EQUAL)
     private Long projectID;
 
+    @Query(type = Query.Type.EQUAL)
+    private String type;
+
     @Query(type = Query.Type.BETWEEN)
     private List<Timestamp> createTime;
 

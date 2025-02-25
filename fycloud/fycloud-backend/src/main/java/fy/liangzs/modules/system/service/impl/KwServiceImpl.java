@@ -69,9 +69,9 @@ public class KwServiceImpl implements KwService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void create(Kw resources) {
-        int exist = kwRepository.countForAdd(resources.getName());
+        int exist = kwRepository.countForAdd(resources.getName(), resources.getCategory().getId());
         if (exist > 0) {
-            throw new BadRequestException("关键字名称已存在，请修改关键字名称");
+            throw new BadRequestException("当前模块下已存在关键字，请修改关键字名称");
         }
         UserDetails userDtails = SecurityUtils.getCurrentUser();
         resources.setCreateBy(userDtails.getUsername());
@@ -83,15 +83,16 @@ public class KwServiceImpl implements KwService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void update(Kw resources) {
-        int exist = kwRepository.countForUpdate(resources.getName(), resources.getId());
+        int exist = kwRepository.countForUpdate(resources.getName(), resources.getId(), resources.getCategory().getId());
         if (exist > 0) {
-            throw new BadRequestException("关键字名称已存在，请修改关键字名称");
+            throw new BadRequestException("当前模块下已存在关键字，请修改关键字名称");
         }
         UserDetails userDetails = SecurityUtils.getCurrentUser();
         Kw kw = kwRepository.findById(resources.getId()).orElseGet(Kw::new);
         kw.getKwParamConfs().clear();
         kw.setUpdateBy(userDetails.getUsername());
         kw.setName(resources.getName());
+        kw.setCategory(resources.getCategory());
         kw.setClassName(resources.getClassName());
         kw.setFuncName(resources.getFuncName());
         kw.setIfResp(resources.getIfResp());

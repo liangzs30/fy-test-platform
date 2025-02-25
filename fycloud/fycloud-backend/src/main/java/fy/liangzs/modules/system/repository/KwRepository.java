@@ -32,11 +32,11 @@ public interface KwRepository extends JpaRepository<Kw, Long>, JpaSpecificationE
     @Query(value = "select * from key_word where name = ?1 limit 1", nativeQuery = true)
     Kw findByName(String name);
 
-    @Query(value = "select count(*) from key_word where name = ?1", nativeQuery = true)
-    int countForAdd(String name);
+    @Query(value = "select count(*) from key_word where name = ?1 and category_id=?2", nativeQuery = true)
+    int countForAdd(String name, Long cid);
 
-    @Query(value = "select count(*) from key_word where name = ?1 and kw_id != ?2", nativeQuery = true)
-    int countForUpdate(String name, long id);
+    @Query(value = "select count(*) from key_word where name = ?1 and kw_id != ?2  and category_id=?3", nativeQuery = true)
+    int countForUpdate(String name, long id, Long cid);
 
     @Query(value = "select count(*) from test_step where kw_id = ?1", nativeQuery = true)
     int caseStepRelate(Long kwId);

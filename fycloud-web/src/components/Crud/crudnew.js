@@ -871,11 +871,11 @@ CRUD.HOOK = {
   /** 新建 - 之前 */
   beforeToAdd: 'beforeCrudToAdd',
   /** 新建 - 之后 */
-  afterToCopy: 'afterCrudToAdd',
+  afterToAdd: 'afterCrudToAdd',
   /** 复制 - 之前 */
   beforeToCopy: 'beforeCrudToAdd',
   /** 复制 - 之后 */
-  afterToAdd: 'afterCrudToAdd',
+  afterToCopy: 'afterCrudToAdd',
   /** 编辑 - 之前 */
   beforeToEdit: 'beforeCrudToEdit',
   /** 编辑 - 之后 */

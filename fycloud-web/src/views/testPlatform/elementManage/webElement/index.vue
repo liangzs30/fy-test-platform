@@ -38,6 +38,19 @@
               class="filter-item"
               @keyup.enter.native="crud.toQuery"
             />
+            <el-select
+              v-model="type"
+              placeholder="请选择元素类型"
+              class="filter-item"
+              style="width: 150px;"
+              @change="crud.toQuery">
+              <el-option
+                v-for="item in elTypes"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
             <date-range-picker v-model="query.createTime" class="date-item" />
             <rrOperation />
           </div>
@@ -61,7 +74,7 @@
             <el-form-item label="定位方式" prop="findType">
               <el-select v-model="form.findType" placeholder="选择定位方式" style="width: 150px;">
                 <el-option
-                  v-for="item in dict.webel_find_type"
+                  v-for="item in dict[findDicts[type]]"
                   :key="item.id"
                   :label="item.label"
                   :value="item.value">{{ item.label }}</el-option>
@@ -88,11 +101,12 @@
             </template>
           </el-table-column>
           <el-table-column :show-overflow-tooltip="true" prop="category.name" label="模块" />
+          <el-table-column :show-overflow-tooltip="true" prop="type" label="类型" />
           <el-table-column :show-overflow-tooltip="true" prop="desc" label="元素说明" />
           <el-table-column :show-overflow-tooltip="true" prop="createBy" label="创建人" />
           <el-table-column :show-overflow-tooltip="true" prop="createTime" label="创建日期" sortable />
-          <el-table-column :show-overflow-tooltip="true" prop="updateBy" label="更新人" />
-          <el-table-column :show-overflow-tooltip="true" prop="updateTime" label="更新日期" sortable />
+          <!-- <el-table-column :show-overflow-tooltip="true" prop="updateBy" label="更新人" />
+          <el-table-column :show-overflow-tooltip="true" prop="updateTime" label="更新日期" sortable /> -->
           <el-table-column v-if="checkPer(['admin','webelement:edit','webelement:del'])" label="操作" width="130px" align="center" fixed="right">
             <template slot-scope="scope">
               <udOperation
@@ -122,12 +136,17 @@ import DateRangePicker from '@/components/DateRangePicker'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { LOAD_CHILDREN_OPTIONS } from '@riophae/vue-treeselect'
-const defaultForm = { id: null, name: null, findType: null, expression: null, desc: null, category: { id: null }, projectID: null }
+const defaultForm = { id: null, type: '', name: null, findType: null, expression: null, desc: null, category: { id: null }, projectID: null }
 export default {
   name: 'Webelement',
   components: { Treeselect, crudOperation, rrOperation, udOperation, pagination, DateRangePicker },
   cruds() {
-    return CRUD({ title: 'WEB元素', url: '/api/web/element', crudMethod: { ...crudWebElement }, optShow: {
+    return CRUD({ title: '元素', url: '/api/web/element', crudMethod: { ...crudWebElement }, 
+     params: {
+      projectID: sessionStorage.getItem("userProjectID"),
+      type: 'Selenium'
+     },
+     optShow: {
       add: true,
       edit: true,
       del: true,
@@ -136,12 +155,21 @@ export default {
     }})
   },
   mixins: [presenter(), header(), form(defaultForm), crud()],
-  dicts: ['webel_find_type'],
+  dicts: ['s_find_type', 'p_find_type'],
   data() {
     return {
       height: document.documentElement.clientHeight - 180 + 'px;',
       categoryName: '', Categorys: [], categoryDatas: [],
       defaultProps: { children: 'children', label: 'name', isLeaf: 'leaf' },
+      type: 'Selenium',
+      is_child_category: false,
+      elTypes: [
+        {label: 'Selenium', value: 'Selenium'},
+        {label: 'Playwright', value: 'Playwright'},
+        {label: '安卓', value: 'Android'},
+        {label: '苹果', value: 'ios'}
+      ],
+      findDicts: {Selenium: 's_find_type', Playwright: 'p_find_type'},
       permission: {
         add: ['admin', 'webelement:add'],
         edit: ['admin', 'webelement:edit'],
@@ -170,6 +198,7 @@ export default {
     this.crud.msg.add = '新增成功'
   },
   mounted: function() {
+    this.type = 'Selenium'
     rrOperation
     const that = this
     window.onresize = function temp() {
@@ -183,9 +212,22 @@ export default {
         e.returnValue = false
       }
     },
-    // 新增与编辑前做的操作
+    // 新增前做的操作
+    [CRUD.HOOK.afterToAdd](crud, form) {
+      this.form.category.id = this.query.categoryId
+      if(this.is_child_category){
+        this.getSupCategorys(form.category.id)
+      }
+    },
+    // 查询前做的操作
+    [CRUD.HOOK.beforeRefresh](crud, form) {
+      this.crud.params.type = this.type
+      this.crud.params.projectID = sessionStorage.getItem('userProjectID')
+    },
+    /** 开始 "新建/编辑" - 之后 */
     [CRUD.HOOK.afterToCU](crud, form) {
       this.form.projectID = sessionStorage.getItem('userProjectID')
+      this.form.type = this.type
       if (form.id == null) {
         this.getCategorys()
       } else {
@@ -289,8 +331,10 @@ export default {
     handleNodeClick(data) {
       if (data.pid === 0) {
         this.query.categoryId = null
+        this.is_child_category = false
       } else {
         this.query.categoryId = data.id
+        this.is_child_category = true
       }
       this.crud.toQuery()
     },

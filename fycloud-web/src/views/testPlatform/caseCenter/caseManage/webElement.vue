@@ -127,9 +127,20 @@ import { LOAD_CHILDREN_OPTIONS } from '@riophae/vue-treeselect'
 const defaultForm = { id: null, name: null, findType: null, expression: null, desc: null, category: { id: null }, projectID: null }
 export default {
   name: 'Webelement',
+  props: {
+    elementType: {
+      type: String,
+      default: 'Selenium'
+    }
+  },
   components: { Treeselect, crudOperation, rrOperation, udOperation, pagination, DateRangePicker },
   cruds() {
-    return CRUD({ title: 'WEB元素', url: '/api/web/element', crudMethod: { ...crudWebElement }, optShow: {
+    return CRUD({ title: '元素', url: '/api/web/element', crudMethod: { ...crudWebElement }, 
+    params: {
+      projectID: sessionStorage.getItem("userProjectID"),
+      type: this.elementType
+     },
+    optShow: {
       add: false,
       edit: false,
       del: false,
@@ -186,6 +197,11 @@ export default {
       if (e.keyCode === 32) {
         e.returnValue = false
       }
+    },
+    // 查询前做的操作
+    [CRUD.HOOK.beforeRefresh](crud, form) {
+      this.crud.params.type = this.elementType
+      this.crud.params.projectID = sessionStorage.getItem('userProjectID')
     },
     // 新增与编辑前做的操作
     [CRUD.HOOK.afterToCU](crud, form) {
